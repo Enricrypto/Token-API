@@ -15,7 +15,7 @@ def get_users():
     serialized_users = list(map(lambda user: user.serialize(), all_users))
     return serialized_users
 
-@api.route('/users/<int:user_id>', methods=['DELETE'])
+@api.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     user = User.query.get(user_id)
     if user is None:
@@ -25,7 +25,7 @@ def delete_user(user_id):
         db.session.commit()
         return jsonify(f'User with id: {user_id}, is successfully deleted.'), 200
 
-@api.route('/users/register', methods=['POST'])
+@api.route('/user/register', methods=['POST'])
 def create_new_user():
     body = request.get_json()
     hashed = bcrypt.hashpw(body['password'].encode(), bcrypt.gensalt(14))
@@ -34,7 +34,7 @@ def create_new_user():
     db.session.commit()
     return jsonify(new_user.serialize()), 201
 
-@api.route('/users/login', methods = ['POST'])
+@api.route('/user/login', methods = ['POST'])
 def login():
     body = request.get_json()
     user = User.query.filter_by(email = body['email']).one()
@@ -45,10 +45,9 @@ def login():
     else:
         return jsonify('User not exists in database!'), 404
 
-
-@api.route('/users/protected', methods = ['GET'])
+@api.route('/user/<int:id>', methods = ['GET'])
 @jwt_required()
-def protected():
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    return jsonify({"id": user.id, "username": user.username }), 200
+def get_user_id(id):
+    # user = get_jwt_identity()
+    user = User.query.get(id)
+    return jsonify(user.serialize()), 201
