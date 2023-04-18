@@ -45,12 +45,10 @@ def login():
     else:
         return jsonify('User not exists in database!'), 404
 
-        
-# # crear ruta privada!
-# @api.route('/users/app', methods = ['GET'])
-# @jwt_required()
-# def get_logged_user():
-#     current_user_id = get_jwt_identity()
-#     user = User.query.get(current_user_id)
-#     print(user)
-#     return jsonify({ "id": user.id, "username": user.username, "email": user.email }), 
+
+@api.route('/users/protected', methods = ['GET'])
+@jwt_required()
+def protected():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    return jsonify({"id": user.id, "username": user.username }), 200
